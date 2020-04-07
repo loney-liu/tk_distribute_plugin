@@ -22,6 +22,14 @@ import maya.mel
 
 logger = sgtk.LogManager.get_logger(__name__)
 
+
+def CleanOldShelf():
+    name='Custom'
+    if maya.cmds.shelfLayout(name, ex=1):
+        if maya.cmds.shelfLayout(name, q=1, ca=1):
+            for each in maya.cmds.shelfLayout(name, q=1, ca=1):
+                maya.cmds.deleteUI(each)
+
 def InstallStudioLibraryPlugin():
     """Dragging and dropping this file into the scene executes the file."""
 
@@ -56,9 +64,12 @@ if r'{path}' not in sys.path:
 import studiolibrary
 studiolibrary.main()
 '''.format(path=srcPath)
+    
+    CleanOldShelf()
 
     shelf = maya.mel.eval('$gShelfTopLevel=$gShelfTopLevel')
     parent = maya.cmds.tabLayout(shelf, query=True, selectTab=True)
+
     maya.cmds.shelfButton(
         command=command,
         annotation='Studio Library',
